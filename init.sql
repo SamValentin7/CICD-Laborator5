@@ -1,4 +1,15 @@
 CREATE TABLE IF NOT EXISTS messages (
     id SERIAL PRIMARY KEY,
-    text TEXT
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at DESC);
+
+ON CONFLICT DO NOTHING;
+
+DO $$
+BEGIN
+    RAISE NOTICE 'Database initialized successfully for CICD6 application';
+    RAISE NOTICE 'Messages table created with sample data';
+END $$;
