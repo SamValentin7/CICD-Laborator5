@@ -1,104 +1,207 @@
-# CICD-Laborator5
+# CICD5 - Flask Messages App with Docker
 
-## Descriere Proiect
+**Aplicație web containerizată cu Docker, Flask și PostgreSQL**
 
-Acest proiect este o aplicație web simplă de tip "Message Board" creată în cadrul Laboratorului 5 pentru automatizarea procesului de livrare a aplicațiilor în producție prin metoda CI/CD. Aplicația permite utilizatorilor să adauge și să vizualizeze mesaje stocate într-o bază de date.
+## Descriere
 
-### Stack Tehnologic
+Acest proiect demonstrează utilizarea **Docker** pentru containerizarea unei aplicații web Flask cu bază de date PostgreSQL, folosind practici moderne de securitate și orchestrare.
 
-- **Backend**: Python Flask
-- **Bază de date**: PostgreSQL 15
-- **Containerizare**: Docker & Docker Compose
-- **CI/CD**: GitHub Actions (pentru automatizarea build și deploy)
+**Autor:** Samciucov Valentin  
+**Tehnologii:** Flask, PostgreSQL, Docker, Docker Compose
+
+## 🛠️ Tehnologii Folosite
+
+### Backend
+- **Flask 2.3.3** - Framework web Python
+- **psycopg2-binary** - Driver PostgreSQL
+- **Gunicorn** - WSGI server
+
+### Database
+- **PostgreSQL 15** - Bază de date relațională
+- **Persistență date** cu volume Docker
+
+### Containerization & Orchestration
+- **Docker** - Container engine (industry standard)
+- **Docker Compose** - Orchestration multi-container
+- **Dockerfile** - Definiție imagine (standard Docker)
 
 ## Structura Proiectului
 
 ```
-CICD-Laborator5/
-├── application.py          # Aplicația Flask principală
-├── Dockerfile             # Fișier pentru containerizarea aplicației
-├── docker-compose.yml     # Fișier pentru orchestrarea serviciilor
-├── init.sql               # Script de inițializare a bazei de date
-├── requirements.txt       # Dependințe Python
-├── README.md              # Documentația proiectului
-└── logs/                  # Director pentru loguri
+cicd5/
+├── application.py           # Aplicația Flask principală
+├── Dockerfile              # Definiție imagine Docker pentru Flask
+├── Dockerfile.db           # Definiție imagine Docker pentru PostgreSQL
+├── requirements.txt        # Dependințe Python
+├── docker-compose.yml      # Configurare orchestrare
+├── init.sql               # Script inițializare bază de date
+├── .env                   # Variabile de mediu pentru testare locală
+├── .env.compose           # Variabile de mediu pentru docker-compose
+├── Walkthrough.md         # Ghid complet pas cu pas
+├── RESET_DATABASE.md      # Ghid pentru resetarea bazei de date
+├── templates/
+│   └── index.html         # Template HTML
+└── README.md              # Documentație
 ```
 
-## Funcționalități
+## Quick Start
 
-Aplicația oferă următoarele funcționalități:
-- Adăugarea de mesaje noi în baza de date
-- Vizualizarea tuturor mesajelor stocate
-- Interfață web simplă și intuitivă
+### Prerechizite
 
-## Sarcini Realizate
+1. **Instalare Docker Desktop:**
+   - **Windows:** Descarcă de la [docker.com](https://www.docker.com/products/docker-desktop)
+   - **macOS:** Descarcă de la [docker.com](https://www.docker.com/products/docker-desktop)
+   - **Linux:** `sudo apt install docker.io docker-compose`
 
-### 1. Crearea aplicației web legată cu o bază de date
+2. **Verificare instalare:**
+   ```bash
+   docker --version
+   docker-compose version
+   ```
 
-Aplicația Flask (`application.py`) se conectează la o bază de date PostgreSQL și permite:
-- Adăugarea mesajelor prin formularul web
-- Afișarea tuturor mesajelor din baza de date
+### Opțiunea 1: Docker Compose
 
-### 2. Crearea fișierului Dockerfile
+1. **Clonare repository:**
+   ```bash
+   git clone https://github.com/SamValentin7/CICD-Laborator5.git
+   cd CICD-Laborator5
+   ```
 
-Fișierul [`Dockerfile`](Dockerfile:1) definește imaginea Docker pentru aplicație:
-- Folosește imaginea de bază `python:3.11-slim`
-- Instalează dependențele din `requirements.txt`
-- Copiază fișierele aplicației
-- Rulează aplicația pe portul 5000
+2. **Construire și pornire servicii:**
+   ```bash
+   docker-compose up --build
+   ```
 
-### 3. Crearea fișierului docker-compose.yml
+3. **Accesare aplicație:**
+   - **URL:** http://localhost:5000
 
-Fișierul [`docker-compose.yml`](docker-compose.yml:1) definește două servicii:
-- **web**: Aplicația Flask (port 5000)
-- **db**: Baza de date PostgreSQL 15
+4. **Oprire servicii:**
+   ```bash
+   docker-compose down
+   ```
 
-### 4. Construirea și rularea containerului local
+### Opțiunea 2: Imagini Docker Individuale
+
+1. **Build imagini:**
+   ```bash
+   docker build -t samvalentin/cicd5-flask-app -f Dockerfile .
+   docker build -t samvalentin/cicd5-postgres-db -f Dockerfile.db .
+   ```
+
+2. **Creare rețea:**
+   ```bash
+   docker network create cicd5-network
+   ```
+
+3. **Pornire database:**
+   ```bash
+   docker run -d --name cicd5-db --network cicd5-network -p 5432:5432 -v postgres_data:/var/lib/postgresql/data samvalentin/cicd5-postgres-db
+   ```
+
+4. **Așteptare 30 secunde** pentru inițializarea bazei de date
+
+5. **Pornire Flask app:**
+   ```bash
+   docker run -d --name cicd5-app --network cicd5-network -p 5000:5000 samvalentin/cicd5-flask-app
+   ```
+
+6. **Accesare aplicație:** http://localhost:5000
+
+## Imagini Docker Hub
+
+Proiectul include două imagini publice pe Docker Hub:
+
+- **Flask App:** [samvalentin/cicd5-flask-app](https://hub.docker.com/repository/docker/samvalentin/cicd5-flask-app)
+- **PostgreSQL DB:** [samvalentin/cicd5-postgres-db](https://hub.docker.com/repository/docker/samvalentin/cicd5-postgres-db)
+
+### Utilizare imagini din Docker Hub:
 
 ```bash
-# Construirea și pornirea serviciilor
-docker-compose up --build
+# Database
+docker run -d --name hub-db --network cicd5-network -p 5432:5432 -v postgres_data:/var/lib/postgresql/data samvalentin/cicd5-postgres-db:latest
 
-# Rularea în background
-docker-compose up -d --build
-
-# Oprirea serviciilor
-docker-compose down
-
-# Vizualizarea logurilor
-docker-compose logs -f
+# Flask app
+docker run -d --name hub-app --network cicd5-network -p 5000:5000 -e DB_HOST=hub-db -e DB_PORT=5432 -e DB_NAME=messages_db -e DB_USER=postgres -e DB_PASSWORD=postgres samvalentin/cicd5-flask-app:latest
 ```
 
-### 5. Construirea imaginii Docker
+## Comenzi Docker Utile
 
+### Construire Imagini
 ```bash
-# Construirea imaginii
-docker build -t cicd-laborator5:latest .
-
-# Listarea imaginilor
-docker images
+docker build -t samvalentin/cicd5-flask-app -f Dockerfile .
+docker build -t samvalentin/cicd5-postgres-db -f Dockerfile.db .
 ```
 
-### 6. Încărcarea imaginii pe Docker Hub
-
+### Rulare Containere
 ```bash
-# Login în Docker Hub
-docker login
-
-# Tag-uirea imaginii pentru Docker Hub
-docker tag samvalentin/cicd-laborator5:latest samvalentin/cicd-laborator5:latest
-
-# Încărcarea imaginii
-docker push username/myapp:latest
+docker run -d --name cicd5-db --network cicd5-network -p 5432:5432 -v postgres_data:/var/lib/postgresql/data samvalentin/cicd5-postgres-db
+docker run -d --name cicd5-app --network cicd5-network -p 5000:5000 samvalentin/cicd5-flask-app
 ```
 
-### 7. Verificarea imaginii pe Docker Hub
-
-Accesați [Docker Hub](https://hub.docker.com/) și verificați că imaginea a fost încărcată corect.
-
-## Accesarea Aplicației
-
-După pornirea serviciilor cu Docker Compose, aplicația este accesibilă la:
+### Management Containere
+```bash
+docker ps                    # Listează containere active
+docker ps -a                 # Listează toate containerele
+docker logs cicd5-db         # Vizualizează log-uri database
+docker logs cicd5-app        # Vizualizează log-uri aplicație
+docker stop cicd5-app cicd5-db    # Oprește containere
+docker rm cicd5-app cicd5-db      # Șterge containere
 ```
-http://localhost:5000
+
+### Management Volume
+```bash
+docker volume ls             # Listează volume
+docker volume inspect postgres_data  # Inspectează volum
+docker volume rm postgres_data       # Șterge volum
 ```
+
+## Configurare Mediului
+
+### Variabile de Mediu
+- `DB_HOST` - Host bază de date (default: cicd5-db)
+- `DB_PORT` - Port bază de date (default: 5432)
+- `DB_NAME` - Nume bază de date (default: messages_db)
+- `DB_USER` - Utilizator PostgreSQL (default: postgres)
+- `DB_PASSWORD` - Parolă PostgreSQL (default: postgres)
+
+### Volume Persistente
+- `postgres_data` - Date PostgreSQL
+- Asigură persistența datelor între repornirile containerelor
+
+## Securitate Docker
+
+### Bune Practici
+- Utilizare non-root user în containere
+- Volume pentru persistența datelor
+- Health checks pentru monitorizare
+- Network isolation între servicii
+- Variabile de mediu pentru configurare
+
+### Probleme Comune
+
+1. **Port deja folosit:**
+   ```bash
+   docker-compose down
+   docker ps -a
+   docker rm $(docker ps -aq)
+   ```
+
+2. **Probleme conectare bază de date:**
+   ```bash
+   docker logs cicd5-db
+   docker-compose restart db
+   ```
+
+3. **Resetare completă baze de date:**
+   ```bash
+   docker-compose down -v
+   docker-compose up --build
+   ```
+
+4. **Docker Desktop nu pornește:**
+   - Verifică dacă virtualizarea este activată în BIOS
+   - Restart Docker Desktop
+   - Reinstalează Docker Desktop dacă este necesar
+
+**Laborator 5 - Containerizare cu Docker**  
+*Creat de Samciucov Valentin © 2026*

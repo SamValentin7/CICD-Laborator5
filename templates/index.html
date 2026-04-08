@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cicd5 - Flask Messages App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #1a1a2e;
+            color: #eee;
+            min-height: 100vh;
+        }
+
+        .wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 300px;
+            background-color: #16213e;
+            padding: 30px;
+            border-right: 3px solid #0f3460;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 300px;
+            padding: 30px;
+        }
+
+        .app-title {
+            font-size: 24px;
+            color: #e94560;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .app-subtitle {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 30px;
+        }
+
+        .form-box {
+            background-color: #0f3460;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-box h3 {
+            color: #e94560;
+            margin-bottom: 15px;
+            font-size: 16px;
+            text-transform: uppercase;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            background-color: #1a1a2e;
+            border: 2px solid #0f3460;
+            color: #eee;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            resize: none;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #e94560;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background-color: #e94560;
+            color: #1a1a2e;
+            border: none;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+
+        .submit-btn:hover {
+            background-color: #ff6b6b;
+        }
+
+        .messages-header {
+            color: #e94560;
+            font-size: 20px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 2px solid #0f3460;
+            padding-bottom: 10px;
+        }
+
+        .message-card {
+            background-color: #16213e;
+            border-left: 4px solid #e94560;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+        }
+
+        .message-text {
+            color: #ddd;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .message-date {
+            color: #666;
+            font-size: 11px;
+            margin-top: 10px;
+            text-align: right;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .tech-section {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #0f3460;
+        }
+
+        .tech-section h4 {
+            color: #e94560;
+            font-size: 14px;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+        }
+
+        .tech-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+
+        .tech-label {
+            color: #888;
+            width: 100px;
+        }
+
+        .tech-value {
+            color: #ddd;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: #00ff88;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: relative;
+                height: auto;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .wrapper {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="sidebar">
+            <div class="app-title">cicd5</div>
+            <div class="app-subtitle">Messages App v1.0</div>
+
+            <div class="form-box">
+                <h3>New Message</h3>
+                <form action="{{ url_for('add_message') }}" method="POST">
+                    <textarea 
+                        name="content" 
+                        placeholder="Type your message here..." 
+                        required
+                    ></textarea>
+                    <button type="submit" class="submit-btn">Send Message</button>
+                </form>
+            </div>
+
+            <div class="tech-section">
+                <h4>Stack</h4>
+                <div class="tech-item">
+                    <span class="tech-label">Backend:</span>
+                    <span class="tech-value">Flask (Python)</span>
+                </div>
+                <div class="tech-item">
+                    <span class="tech-label">Database:</span>
+                    <span class="tech-value">PostgreSQL</span>
+                </div>
+                <div class="tech-item">
+                    <span class="tech-label">Container:</span>
+                    <span class="tech-value">Docker</span>
+                </div>
+                <div class="tech-item">
+                    <span class="tech-label">Orchestration:</span>
+                    <span class="tech-value">Docker Compose</span>
+                </div>
+                <div class="tech-item">
+                    <span class="status-dot"></span>
+                    <span class="tech-value">System Online</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="messages-header">Messages Feed</div>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="message-card">
+                        <div class="message-text">{{ message.content }}</div>
+                        <div class="message-date">{{ message.created_at.strftime('%d %B %Y, %H:%M') }}</div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    No messages yet. Be the first to post!
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
