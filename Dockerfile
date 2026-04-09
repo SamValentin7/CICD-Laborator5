@@ -23,7 +23,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY application.py .
 COPY templates/ templates/
 
-# Create non-root user for security (Docker best practice)
+# Create non-root user for security
 RUN adduser --disabled-password --gecos '' appuser \
     && chown -R appuser:appuser /app
 USER appuser
