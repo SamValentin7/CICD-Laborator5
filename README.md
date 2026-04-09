@@ -28,7 +28,7 @@ Acest proiect demonstrează utilizarea **Docker** pentru containerizarea unei ap
 ## Structura Proiectului
 
 ```
-cicd5/
+cicd-laborator5/
 ├── application.py           # Aplicația Flask principală
 ├── Dockerfile              # Definiție imagine Docker pentru Flask
 ├── Dockerfile.db           # Definiție imagine Docker pentru PostgreSQL
@@ -37,8 +37,7 @@ cicd5/
 ├── init.sql               # Script inițializare bază de date
 ├── .env                   # Variabile de mediu pentru testare locală
 ├── .env.compose           # Variabile de mediu pentru docker-compose
-├── Walkthrough.md         # Ghid complet pas cu pas
-├── RESET_DATABASE.md      # Ghid pentru resetarea bazei de date
+├── Images configuration.md         # Ghid complet pas cu pas
 ├── templates/
 │   └── index.html         # Template HTML
 └── README.md              # Documentație
