@@ -130,12 +130,12 @@
 3. **Run from Docker Hub:**
    ```bash
    # Database with persistent data volume
-   docker run -d --name hub-db --network cicd5-network -p 5432:5432 -v postgres_data:/var/lib/postgresql/data samvalentin/cicd5-postgres-db:latest
+   docker run -d --name cicd5-db --network cicd5-network -p 5432:5432 -v postgres_data:/var/lib/postgresql/data samvalentin/cicd5-postgres-db:latest
 
    # Wait 30 seconds for database
 
    # Flask app
-   docker run -d --name hub-app --network cicd5-network -p 5000:5000 -e DB_HOST=hub-db -e DB_PORT=5432 -e DB_NAME=messages_db -e DB_USER=postgres -e DB_PASSWORD=postgres samvalentin/cicd5-flask-app:latest
+   docker run -d --name cicd5-app --network cicd5-network -p 5000:5000 -e DB_HOST=hub-db -e DB_PORT=5432 -e DB_NAME=messages_db -e DB_USER=postgres -e DB_PASSWORD=postgres samvalentin/cicd5-flask-app:latest
    ```
 
 4. **Test the application:**
@@ -144,8 +144,8 @@
 
 5. **Cleanup:**
    ```bash
-   docker stop hub-app hub-db
-   docker rm hub-app hub-db
+   docker stop cicd5-app cicd5-db
+   docker rm cicd5-app cicd5-db
    ```
 
 ---
@@ -183,4 +183,6 @@ docker push samvalentin/cicd5-postgres-db:latest
 docker stop cicd5-app cicd5-db
 docker rm cicd5-app cicd5-db
 docker network rm cicd5-network
+
+docker rmi samvalentin/cicd5-flask-app samvalentin/cicd5-postgres-db
 ```
